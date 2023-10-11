@@ -41,12 +41,17 @@ exports.signup = async (req, res) => {
       designation,
       password: hashedPassword,
       userType,
-      userStatus: 'active', // Set to 'pending' initially
+      userStatus: 'active', 
     });
 
     await newUser.save();
-
-    return res.status(201).json({ message: 'User registered successfully.' });
+  const user = await User.findOne({ email });
+        // Generate a JWT token for authentication
+      const token = jwt.sign({ userId: user._id }, config.jwtSecret, {
+        expiresIn: '1h', // Token expires in 1 hour (adjust as needed)
+      });
+  
+      return res.status(200).json({ token ,user});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error.' });
@@ -84,43 +89,50 @@ exports.login = async (req, res) => {
     }
   };
   
-  exports.loginOtp = async (req, res) => {
-    try {
-      const { phoneNumber } = req.body;
-  
-      // Generate a random 6-digit OTP
-    // Generate a random OTP (One-Time Password)
-    const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
-  
-    // Set OTP and its expiration in the user document
-  
-    otpExpiration = new Date(Date.now() + 600000); // OTP expires in 10 minutes
+exports.loginOtp = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
 
+    // Check if the phone number already exists in the database
+    const existingUser = await Otp.findOne({ phoneNumber });
+
+    // Generate a random 6-digit OTP
+    const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
     
-      // Save the OTP in the database
-      const user = new Otp({ phoneNumber, otpCode, otpExpiration});
-      await user.save();
-  
-      // Send the OTP via SMS
-      await client.messages.create({
-        to: phoneNumber,
-        from: config.twilioPhoneNumber,
-        body: `Your OTP is: ${otpCode}`,
-      });
-  
-      res.status(200).json({ message: 'OTP sent successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to send OTP' });
+    // Set OTP and its expiration
+    const otpExpiration = new Date(Date.now() + 600000); // OTP expires in 10 minutes
+
+    if (existingUser) {
+      // If the phone number already exists, update the OTP and its expiration
+      existingUser.otpCode = otpCode;
+      existingUser.otpExpiration = otpExpiration;
+      await existingUser.save();
+    } else {
+      // If the phone number doesn't exist, create a new entry in the database
+      const newUser = new Otp({ phoneNumber, otpCode, otpExpiration });
+      await newUser.save();
     }
-  
-  };
+
+    // Send the OTP via SMS
+    await client.messages.create({
+      to: phoneNumber,
+      from: config.twilioPhoneNumber,
+      body: `Your OTP is: ${otpCode}`,
+    });
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+};
+
 
   exports.loginOtpVerify = async (req, res) => {
     try {
       const { phoneNumber, otp } = req.body;
       const otps = await Otp.findOne({ phoneNumber });
-   
+   console.log(otp, otp)
       // // Find the user by phoneNumber and OTP
      
      
@@ -131,7 +143,7 @@ exports.login = async (req, res) => {
         return;
       }
       const user = await User.findOne({ phoneNumber });
-      const token = jwt.sign({ userId: user._id }, config.jwtSecret, {
+      const token = jwt.sign({ userId: user?._id }, config.jwtSecret, {
         expiresIn: '1h', // Token expires in 1 hour (adjust as needed)
       });
       if (user) {
