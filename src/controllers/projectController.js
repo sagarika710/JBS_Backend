@@ -150,33 +150,47 @@ exports.getDate = async (req, res) => {
 
 
 
-exports.getTime = async (req, res) => {
+exports.getTime = async(req, res) => {
   const currentTime = new Date();
-  const startHour = 10;
-  const endHour = 18;
-  const timeSlotDuration = 1; // in hours
+  const startHour = 9;
+  const endHour = 19;
+  const timeSlotDuration = 1 // in hours
 
   const currentHour = currentTime.getHours();
-  const availableHours = Math.max(startHour, currentHour); // Use the currentHour as the starting point
+  const availableHours = Math.max(startHour, startHour);
   const timeSlots = [];
 
   for (let hour = availableHours; hour < endHour; hour++) {
-    let startTime = hour;
-    let period = 'AM';
-
-    if (hour >= 12) {
-      period = 'PM';
-      if (hour > 12) {
-        startTime = hour - 12;
-      }
-    }
-
-    startTime = startTime.toString().padStart(2, "0");
-    const endTime = (hour + timeSlotDuration).toString().padStart(2, "0");
-
-    const timeSlot = `${startTime}:${endTime} ${period}`;
+        const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour;
+       const startTime = `${displayHour.toString().padStart(2, '0')}:${'00'} ${period}`;
+ const endTime = `${(displayHour + timeSlotDuration).toString().padStart(2, '0')}:${'00'} ${period}`;
+    const timeSlot = `${endTime}`;
     timeSlots.push(timeSlot);
   }
 
   res.json(timeSlots);
 };
+
+// exports.getTime = async (req, res) => {
+//   const currentTime = new Date();
+//   const startHour = 10;
+//   const endHour = 18;
+//   const timeSlotDuration = 1; // in hours
+
+//   const currentHour = currentTime.getHours();
+//   const availableHours = Math.max(startHour, currentHour); // Use the currentHour as the starting point
+//   const timeSlots = [];
+
+//   for (let hour = availableHours; hour < endHour; hour += timeSlotDuration) {
+//     const period = hour >= 12 ? 'PM' : 'AM';
+//     const displayHour = hour > 12 ? hour - 12 : hour;
+//     const startTime = `${displayHour.toString().padStart(2, '0')}:${'00'} ${period}`;
+//     console.log(startTime)
+//     const endTime = `${(displayHour + timeSlotDuration).toString().padStart(2, '0')}:${'00'} ${period}`;
+//     const timeSlot = `${startTime} - ${endTime}`;
+//     timeSlots.push(timeSlot);
+//   }
+
+//   res.json(timeSlots);
+// };
