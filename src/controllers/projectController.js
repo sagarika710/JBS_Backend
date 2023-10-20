@@ -150,21 +150,31 @@ exports.getDate = async (req, res) => {
 
 
 
-exports.getTime = async(req, res) => {
+exports.getTime = async (req, res) => {
   const currentTime = new Date();
   const startHour = 10;
   const endHour = 18;
   const timeSlotDuration = 1; // in hours
 
   const currentHour = currentTime.getHours();
-  const availableHours = Math.max(startHour, startHour);
+  const availableHours = Math.max(startHour, currentHour); // Use the currentHour as the starting point
   const timeSlots = [];
 
   for (let hour = availableHours; hour < endHour; hour++) {
-    const startTime = hour.toString().padStart(2, "0") + ":00";
-    const endTime =
-      (hour + timeSlotDuration).toString().padStart(2, "0") + ":00";
-    const timeSlot = `${startTime} - ${endTime}`;
+    let startTime = hour;
+    let period = 'AM';
+
+    if (hour >= 12) {
+      period = 'PM';
+      if (hour > 12) {
+        startTime = hour - 12;
+      }
+    }
+
+    startTime = startTime.toString().padStart(2, "0");
+    const endTime = (hour + timeSlotDuration).toString().padStart(2, "0");
+
+    const timeSlot = `${startTime}:${endTime} ${period}`;
     timeSlots.push(timeSlot);
   }
 
