@@ -128,6 +128,7 @@ const project = await Project.find();
 
 exports.getDate = async (req, res) => {
   const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const currentMonth = monthNames[currentDate.getMonth()];
 
@@ -142,7 +143,7 @@ exports.getDate = async (req, res) => {
   }
 
   res.json({
-    month: currentMonth,
+    month: `${currentMonth} ${currentYear}`,
     date: dates,
   });
 };
