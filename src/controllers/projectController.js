@@ -123,3 +123,39 @@ const project = await Project.find();
     return res.status(500).json({ message: 'Internal server error.' });
   }
 };
+
+
+
+exports.getDate = async (req, res) => {
+  const currentDate = new Date();
+
+  const dates = [];
+
+  for (let i = 0; i < 7; i++) {
+    currentDate.setDate(currentDate.getDate() + 1); // Update the currentDate here
+    dates.push(currentDate.toISOString().split("T")[0]);
+  }
+
+  res.json(dates);
+};
+
+exports.getTime = async(req, res) => {
+  const currentTime = new Date();
+  const startHour = 10;
+  const endHour = 18;
+  const timeSlotDuration = 1; // in hours
+
+  const currentHour = currentTime.getHours();
+  const availableHours = Math.max(startHour, startHour);
+  const timeSlots = [];
+
+  for (let hour = availableHours; hour < endHour; hour++) {
+    const startTime = hour.toString().padStart(2, "0") + ":00";
+    const endTime =
+      (hour + timeSlotDuration).toString().padStart(2, "0") + ":00";
+    const timeSlot = `${startTime} - ${endTime}`;
+    timeSlots.push(timeSlot);
+  }
+
+  res.json(timeSlots);
+};

@@ -146,6 +146,7 @@ exports.loginOtp = async (req, res) => {
       const token = jwt.sign({ userId: user?._id }, config.jwtSecret, {
         expiresIn: '1h', // Token expires in 1 hour (adjust as needed)
       });
+   
       if (user) {
         res.status(200).json({token, user });
        
