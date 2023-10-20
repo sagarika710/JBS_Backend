@@ -128,19 +128,17 @@ const project = await Project.find();
 
 exports.getDate = async (req, res) => {
   const currentDate = new Date();
-  currentDate.setDate(1); // Set the date to the 1st of the current month
-
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const currentMonth = monthNames[currentDate.getMonth()];
 
   const dates = [];
 
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 0; i < 7; i++) {
     const dayOfWeek = currentDate.toLocaleDateString("en-US", { weekday: 'short' });
     const date = currentDate.getDate();
     dates.push({ day: dayOfWeek, date: date });
 
-    currentDate.setDate(currentDate.getDate() + 1); // Update the date
+    currentDate.setDate(currentDate.getDate() + 1); // Increment the date by 1 day
   }
 
   res.json({
@@ -148,6 +146,7 @@ exports.getDate = async (req, res) => {
     date: dates,
   });
 };
+
 
 
 exports.getTime = async(req, res) => {
