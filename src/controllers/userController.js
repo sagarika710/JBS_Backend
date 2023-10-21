@@ -1,5 +1,6 @@
 const User = require('../models/User');
-
+const jwt = require('jsonwebtoken');
+const config = require('../../config/config');
 exports.getUserById = async (req, res) => {
     try {
       const userId = req.params.id;
@@ -44,7 +45,6 @@ exports.getUserById = async (req, res) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found.' });
       }
-  
       // Update user data based on request body
       user.fullName = req.body.fullName || user.fullName;
       user.email = req.body.email || user.email;
@@ -57,8 +57,11 @@ exports.getUserById = async (req, res) => {
       user.userStatus = req.body.userStatus || user.userStatus;
   
       await user.save();
-  
-      return res.status(200).json({ message: 'User profile updated successfully.' });
+           // Generate a JWT token for authentication
+      const token = jwt.sign({ userId: user._id }, config.jwtSecret, {
+        expiresIn: '1h', // Token expires in 1 hour (adjust as needed)
+      });
+          return res.status(200).json({ token ,user});
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Internal server error.' });
