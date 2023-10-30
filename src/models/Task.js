@@ -8,7 +8,9 @@ const taskSchema = new mongoose.Schema({
   userid: String,
   address: String,
   phone: String,
+  Comment:String,
   username: String,
+  day:String,
   date: { type: String, required: true },
   time: { type: String, required: true },
 });
