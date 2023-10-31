@@ -18,6 +18,7 @@ exports.creatAppointments = async (req, res) => {
 exports.getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find();
+
     res.json(appointments);
   } catch (error) {
     res.status(500).json({ error: "Unable to fetch appointments" });
@@ -29,7 +30,8 @@ exports.getAllAppointments = async (req, res) => {
 
 exports.getAppointmentsById = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.find({user_id:req.params.id});
+        console.log(appointment)
     if (!appointment) {
       return res.status(404).json({ error: "Appointment not found" });
     }
