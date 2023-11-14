@@ -1,17 +1,19 @@
-const AWS = require('aws-sdk');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
+const { S3 } = require("aws-sdk");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
 
 // Set up AWS credentials and S3 details
-const accessKeyId = 'your-access-key-id';
-const secretAccessKey = 'your-secret-access-key';
-const region = 'your-region'; // e.g., 'us-east-1'
-const bucketName = 'your-s3-bucket-name';
+const accessKeyId = "AKIAQVGDKDBD36FYXPR2";
+const secretAccessKey = "NZfS814hzhK2kunoTDombT777Xb0y0VUBtXF2rdF";
+const region = "us-east-1"; // e.g., 'us-east-1'
+const bucketName = "jbs-pro";
 
 // Create an S3 instance
-const s3 = new AWS.S3({
-  accessKeyId,
-  secretAccessKey,
+const s3 = new S3({
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
   region,
 });
 
@@ -20,12 +22,12 @@ const upload = multer({
   storage: multerS3({
     s3,
     bucket: bucketName,
-    acl: 'public-read', // Set access control to public-read for the uploaded file
+    acl: "public-read", // Set access control to public-read for the uploaded file
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      cb(null, Date.now().toString() + '-' + file.originalname);
+      cb(null, Date.now().toString() + "-" + file.originalname);
     },
   }),
 });
@@ -36,5 +38,6 @@ const uploadImage = (req, res) => {
 };
 
 module.exports = {
+  upload,
   uploadImage,
 };
