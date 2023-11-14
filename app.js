@@ -7,6 +7,7 @@ const userRoutes = require("./src/routes/user");
 const projectRoutes = require("./src/routes/project");
 const config = require("./config/config");
 const taskRoutes = require("./src/routes/taskRoutes");
+const uploadRoutes = require('./src/routes/uploadRoutes');
 const app = express();
 
 // Connect to MongoDB
@@ -28,6 +29,7 @@ app.use("/user", userRoutes);
 app.use("/project", projectRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/tasks", taskRoutes);
+app.use('/img', uploadRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

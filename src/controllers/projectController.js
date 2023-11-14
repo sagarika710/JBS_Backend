@@ -42,7 +42,6 @@ exports.updateProject = async (req, res) => {
     if (!project) {
       return res.status(404).json({ message: 'Invalid Project id' });
     }
-
     project.projectName = req.body.projectName || project.projectName,
       project.startDate = req.body.startDate || project.startDate,
       project.endDate = req.body.endDate || project.endDate,
