@@ -32,7 +32,31 @@ exports.getUserById = async (req, res) => {
       return res.status(500).json({ message: 'Internal server error.' });
     }
   };
+  exports.getAllUsers = async (req, res) => {
+    try {
+      // Find all users
+      const users = await User.find();
   
+      // Return user data (excluding sensitive information like password and OTP)
+      const usersData = users.map(user => ({
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        dob: user.dob,
+        address: user.address,
+        profileImage: user.profileImage,
+        phoneNumber: user.phoneNumber,
+        designation: user.designation,
+        userType: user.userType,
+        userStatus: user.userStatus,
+      }));
+  
+      return res.status(200).json(usersData);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error.' });
+    }
+  };
 
   exports.updateUserProfile = async (req, res) => {
     try {

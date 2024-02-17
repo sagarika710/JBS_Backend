@@ -61,3 +61,21 @@ exports.deleteTask = async (req, res) => {
     res.status(500).json({ error: "Unable to delete task" });
   }
 };
+exports.getTasksByUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+console.log(userId)
+    // Find tasks based on user ID
+    const tasks = await Task.find({ userid: userId });
+
+    // Check if tasks exist
+    if (tasks.length === 0) {
+      return res.status(404).json({ error: 'No tasks found for the user' });
+    }
+
+    res.json(tasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Unable to fetch tasks' });
+  }
+};
